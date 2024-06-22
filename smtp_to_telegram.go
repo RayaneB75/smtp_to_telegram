@@ -42,6 +42,7 @@ type SmtpConfig struct {
 
 type TelegramConfig struct {
 	telegramChatIds                  string
+	telegramIsThread                 string
 	telegramBotToken                 string
 	telegramApiPrefix                string
 	telegramApiTimeoutSeconds        float64
@@ -116,6 +117,7 @@ func main() {
 		}
 		telegramConfig := &TelegramConfig{
 			telegramChatIds:                  c.String("telegram-chat-ids"),
+			telegramIsThread:                 c.String("telegram-is-thread"),
 			telegramBotToken:                 c.String("telegram-bot-token"),
 			telegramApiPrefix:                c.String("telegram-api-prefix"),
 			telegramApiTimeoutSeconds:        c.Float64("telegram-api-timeout-seconds"),
@@ -156,6 +158,11 @@ func main() {
 			Usage:    "Telegram: comma-separated list of chat ids",
 			EnvVars:  []string{"ST_TELEGRAM_CHAT_IDS"},
 			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "telegram-is-thread",
+			Usage:    "Telegram: is this/these chats thread(s) ?",
+			EnvVars:  []string{"ST_TELEGRAM_IS_THREAD"},
 		},
 		&cli.StringFlag{
 			Name:     "telegram-bot-token",
@@ -319,6 +326,11 @@ func SendMessageToChat(
 	// out of the box.
 	//
 	// See: https://golang.org/pkg/net/http/#ProxyFromEnvironment
+	if telegramConfig.telegramIsThread == "true" {
+		threadId := strings.Split(chatId, "_")[1]
+	} else {
+		threadId := ""
+	}
 	resp, err := client.PostForm(
 		// https://core.telegram.org/bots/api#sendmessage
 		fmt.Sprintf(
@@ -326,7 +338,7 @@ func SendMessageToChat(
 			telegramConfig.telegramApiPrefix,
 			telegramConfig.telegramBotToken,
 		),
-		url.Values{"chat_id": {chatId}, "text": {message.text}},
+		url.Values{"chat_id": {chatId}, "message_thread_id": {threadId}, "text": {message.text}},
 	)
 	if err != nil {
 		return nil, err
