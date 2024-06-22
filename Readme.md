@@ -1,5 +1,11 @@
 > forked from [KostyaEsmukov/smtp_to_telegram](https://github.com/KostyaEsmukov/smtp_to_telegram)
 
+# Utilisation au ResEl
+
+Ce programme est utilisé pour envoyer des messages dans un canal Telegram en se faisant passer pour un serveur SMTP. Il est utilisé pour envoyer des messages d'alerte depuis UniFi dans un canal Telegram de monitoring au ResEl (lien vers le canal disponible sur #ResEl).
+
+Il est déployé sur la machine virtuelle `ubnt` (du controlleur UniFi) et est configuré pour écouter sur le port 2525 (sur la loopback uniquement). Les messages envoyés à cette adresse sont ensuite transmis au canal Telegram par le biais d'un bot.
+
 # SMTP to Telegram
 
 [![Docker Hub](https://img.shields.io/docker/pulls/kostyaesmukov/smtp_to_telegram.svg?style=flat-square)][Docker Hub]
@@ -21,7 +27,7 @@ the notification mail would be sent to the chosen Telegram chats.
 
 1. Create a new Telegram bot: <https://core.telegram.org/bots#creating-a-new-bot>.
 2. Open that bot account in the Telegram account which should receive
-   the messages, press `/start`.
+    the messages, press `/start`.
 3. Retrieve a chat id with `curl https://api.telegram.org/bot<BOT_TOKEN>/getUpdates`.
 4. Repeat steps 2 and 3 for each Telegram account which should receive the messages.
 
