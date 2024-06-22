@@ -42,7 +42,7 @@ type SmtpConfig struct {
 
 type TelegramConfig struct {
 	telegramChatIds                  string
-	telegramIsThread                 string
+	telegramIsThread                 bool
 	telegramBotToken                 string
 	telegramApiPrefix                string
 	telegramApiTimeoutSeconds        float64
@@ -117,7 +117,7 @@ func main() {
 		}
 		telegramConfig := &TelegramConfig{
 			telegramChatIds:                  c.String("telegram-chat-ids"),
-			telegramIsThread:                 c.String("telegram-is-thread"),
+			telegramIsThread:                 c.Bool("telegram-is-thread"),
 			telegramBotToken:                 c.String("telegram-bot-token"),
 			telegramApiPrefix:                c.String("telegram-api-prefix"),
 			telegramApiTimeoutSeconds:        c.Float64("telegram-api-timeout-seconds"),
@@ -326,10 +326,9 @@ func SendMessageToChat(
 	// out of the box.
 	//
 	// See: https://golang.org/pkg/net/http/#ProxyFromEnvironment
-	if telegramConfig.telegramIsThread == "true" {
-		threadId := strings.Split(chatId, "_")[1]
-	} else {
-		threadId := ""
+	threadId := ""
+	if telegramConfig.telegramIsThread == true {
+		threadId = strings.Split(chatId, "_")[1]
 	}
 	resp, err := client.PostForm(
 		// https://core.telegram.org/bots/api#sendmessage
